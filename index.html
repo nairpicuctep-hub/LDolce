@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>L'dolce — Gelato</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('RgIqjjo2MyCJobkYn');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -293,14 +295,14 @@ footer{background:var(--mag);color:rgba(255,250,252,0.55);padding:56px 60px;disp
       </div>
     </div>
     <div class="contact-form reveal">
-      <div class="fg"><label><span data-lang="nl" class="active">Uw naam</span><span data-lang="ro">Numele dvs.</span><span data-lang="fr">Votre nom</span><span data-lang="en">Your name</span></label><input type="text"></div>
-      <div class="fg"><label>E-mail</label><input type="email"></div>
-      <div class="fg"><label><span data-lang="nl" class="active">Telefoon</span><span data-lang="ro">Telefon</span><span data-lang="fr">Téléphone</span><span data-lang="en">Phone</span></label><input type="tel"></div>
+      <div class="fg"><label><span data-lang="nl" class="active">Uw naam</span><span data-lang="ro">Numele dvs.</span><span data-lang="fr">Votre nom</span><span data-lang="en">Your name</span></label><input type="text" id="f-name"></div>
+      <div class="fg"><label>E-mail</label><input type="email" id="f-email"></div>
+      <div class="fg"><label><span data-lang="nl" class="active">Telefoon</span><span data-lang="ro">Telefon</span><span data-lang="fr">Téléphone</span><span data-lang="en">Phone</span></label><input type="tel" id="f-phone"></div>
       <div class="fg"><label><span data-lang="nl" class="active">Type aanvraag</span><span data-lang="ro">Tip solicitare</span><span data-lang="fr">Type de demande</span><span data-lang="en">Request type</span></label>
-        <select><option>—</option><option>Gelato bestelling</option><option>Gelatofiets</option><option>Gelato taart</option><option>Cadeaubon</option><option>Evenement / catering</option><option>Andere vraag</option></select>
+        <select id="f-type"><option>—</option><option>Gelato bestelling</option><option>Gelatofiets</option><option>Gelato taart</option><option>Cadeaubon</option><option>Evenement / catering</option><option>Andere vraag</option></select>
       </div>
-      <div class="fg"><label><span data-lang="nl" class="active">Datum</span><span data-lang="ro">Data</span><span data-lang="fr">Date</span><span data-lang="en">Date</span></label><input type="date"></div>
-      <div class="fg"><label><span data-lang="nl" class="active">Bericht</span><span data-lang="ro">Mesaj</span><span data-lang="fr">Message</span><span data-lang="en">Message</span></label><textarea></textarea></div>
+      <div class="fg"><label><span data-lang="nl" class="active">Datum</span><span data-lang="ro">Data</span><span data-lang="fr">Date</span><span data-lang="en">Date</span></label><input type="date" id="f-date"></div>
+      <div class="fg"><label><span data-lang="nl" class="active">Bericht</span><span data-lang="ro">Mesaj</span><span data-lang="fr">Message</span><span data-lang="en">Message</span></label><textarea id="f-message"></textarea></div>
       <button class="btn-p" style="align-self:flex-start;margin-top:6px;" onclick="handleSubmit()"><span data-lang="nl" class="active">Verstuur</span><span data-lang="ro">Trimite</span><span data-lang="fr">Envoyer</span><span data-lang="en">Send</span></button>
       <div id="form-ok" style="display:none;color:var(--mag);font-size:14px;margin-top:10px;font-style:italic;">
         <span data-lang="nl" class="active">✓ Bedankt! Wij nemen snel contact met u op.</span>
@@ -456,42 +458,51 @@ function resetCarouselTimer() {
 }
 
 function handleSubmit() {
-  const name    = document.querySelector('.fg input[type=text]').value.trim();
-  const email   = document.querySelector('.fg input[type=email]').value.trim();
-  const phone   = document.querySelector('.fg input[type=tel]').value.trim();
-  const type    = document.querySelector('.fg select').value;
-  const date    = document.querySelector('.fg input[type=date]').value;
-  const message = document.querySelector('.fg textarea').value.trim();
+  const name    = document.getElementById('f-name').value.trim();
+  const email   = document.getElementById('f-email').value.trim();
+  const phone   = document.getElementById('f-phone').value.trim();
+  const type    = document.getElementById('f-type').value;
+  const date    = document.getElementById('f-date').value;
+  const message = document.getElementById('f-message').value.trim();
 
-  const labels = {
-    nl: { subject: 'Nieuwe aanvraag via ldolce.be', name: 'Naam', email: 'E-mail', phone: 'Telefoon', type: 'Type aanvraag', date: 'Datum', msg: 'Bericht' },
-    ro: { subject: 'Cerere nouă via ldolce.be',     name: 'Nume', email: 'E-mail', phone: 'Telefon',  type: 'Tip solicitare', date: 'Data', msg: 'Mesaj' },
-    fr: { subject: 'Nouvelle demande via ldolce.be', name: 'Nom', email: 'E-mail', phone: 'Téléphone', type: 'Type de demande', date: 'Date', msg: 'Message' },
-    en: { subject: 'New request via ldolce.be',      name: 'Name', email: 'E-mail', phone: 'Phone',   type: 'Request type', date: 'Date', msg: 'Message' }
-  };
-  const L = labels[currentLang] || labels.nl;
+  if (!name || !email) {
+    const errMsg = { nl: 'Vul uw naam en e-mail in.', ro: 'Completați numele și e-mailul.', fr: 'Veuillez remplir votre nom et e-mail.', en: 'Please fill in your name and email.' };
+    alert(errMsg[currentLang] || errMsg.nl);
+    return;
+  }
 
-  const body = [
-    L.name    + ': ' + (name    || '-'),
-    L.email   + ': ' + (email   || '-'),
-    L.phone   + ': ' + (phone   || '-'),
-    L.type    + ': ' + (type    || '-'),
-    L.date    + ': ' + (date    || '-'),
-    '',
-    L.msg + ':',
-    message || '-'
-  ].join('\n');
+  const subjects = { nl: "Nieuwe aanvraag via L'dolce website", ro: "Cerere nouă via L'dolce website", fr: "Nouvelle demande via L'dolce website", en: "New request via L'dolce website" };
 
-  const mailto = 'mailto:ldolce@outlook.be'
-    + '?subject=' + encodeURIComponent(L.subject)
-    + '&body='    + encodeURIComponent(body);
+  const btn = document.querySelector('.contact-form .btn-p');
+  const origText = btn.innerHTML;
+  btn.innerHTML = '...';
+  btn.disabled = true;
 
-  window.location.href = mailto;
-
-  const s = document.getElementById('form-ok');
-  s.style.display = 'block';
-  s.querySelectorAll('[data-lang]').forEach(el => el.classList.toggle('active', el.getAttribute('data-lang') === currentLang));
-  setTimeout(() => s.style.display = 'none', 6000);
+  emailjs.send('service_vt3ijj2', 'template_wf76r6l', {
+    subject:      subjects[currentLang] || subjects.nl,
+    from_name:    name,
+    from_email:   email,
+    phone:        phone || '-',
+    request_type: type || '-',
+    date:         date || '-',
+    message:      message || '-'
+  }).then(() => {
+    btn.innerHTML = origText;
+    btn.disabled = false;
+    const s = document.getElementById('form-ok');
+    s.style.display = 'block';
+    s.querySelectorAll('[data-lang]').forEach(el => el.classList.toggle('active', el.getAttribute('data-lang') === currentLang));
+    setTimeout(() => s.style.display = 'none', 6000);
+    // Reset form
+    ['f-name','f-email','f-phone','f-date','f-message'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-type').selectedIndex = 0;
+  }).catch(err => {
+    btn.innerHTML = origText;
+    btn.disabled = false;
+    const errMsg = { nl: 'Er is een fout opgetreden. Probeer opnieuw.', ro: 'A apărut o eroare. Încercați din nou.', fr: 'Une erreur est survenue. Réessayez.', en: 'An error occurred. Please try again.' };
+    alert(errMsg[currentLang] || errMsg.nl);
+    console.error('EmailJS error:', err);
+  });
 }
 
 const observer = new IntersectionObserver(entries => {
