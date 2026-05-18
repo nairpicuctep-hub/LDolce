@@ -413,7 +413,7 @@ function renderProducts() {
   const list = document.getElementById('prod-list');
   list.innerHTML = products.map((p, i) => `
     <div class="prod-item" id="pi-${p.id}">
-      <div class="prod-dot" style="background:${p.color}"></div>
+      <div class="prod-dot" style="background:${PATTERN_COLORS_SRC[p.color] ? 'none' : p.color};overflow:hidden;">${PATTERN_COLORS_SRC[p.color] ? '<img src="' + PATTERN_COLORS_SRC[p.color] + '" width="40" height="40" style="border-radius:50%;display:block;">' : ''}</div>
       <div class="prod-info">
         <h4>${esc(p.name)}</h4>
         <p>${esc(p.desc_nl)}</p>
