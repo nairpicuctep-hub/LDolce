@@ -480,7 +480,7 @@ function renderFlavors(){
   const grid=document.getElementById('flavors-grid');
   grid.innerHTML=products.map(p=>`
     <div class="flavor-card reveal">
-      <div class="flavor-dot" style="background:${p.color}"></div>
+      <div class="flavor-dot" style="background:${PATTERN_COLORS_SRC[p.color] ? 'none' : p.color};overflow:hidden;">${PATTERN_COLORS_SRC[p.color] ? '<img src="' + PATTERN_COLORS_SRC[p.color] + '" width="46" height="46" style="border-radius:50%;display:block;">' : ''}</div>
       <div class="flavor-name">${p.name}</div>
       <div class="flavor-desc">
         <span data-lang="nl" class="${currentLang==='nl'?'active':''}">${p.desc_nl}</span>
