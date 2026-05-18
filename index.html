@@ -455,6 +455,16 @@ function renderAboutText(){
   if(el) el.textContent=getAbout(currentLang);
 }
 
+const PATTERN_COLORS = {
+  'url-stracciatella': 'linear-gradient(135deg,#f5e6d3,#e8d4b8)',
+  'url-bacio':         'linear-gradient(135deg,#7a3a14,#c9a96e)',
+  'url-cookies':       'linear-gradient(135deg,#f5f0e8,#2a2a2a)',
+  'url-tiramisu':      'linear-gradient(135deg,#e8d8b0,#7a4010)',
+  'url-nocciola':      'linear-gradient(135deg,#b06030,#6a3210)',
+  'url-fragola_panna': 'linear-gradient(135deg,#f090a0,#fff5f7)',
+  'url-pepene':        'linear-gradient(135deg,#d02838,#1a1008)',
+};
+
 function renderFlavors(){
   const products=getProducts();
   const grid=document.getElementById('flavors-grid');
